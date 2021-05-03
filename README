@@ -1,0 +1,57 @@
+Datalink reverse engineering effort.
+
+Introductory thoughts
+-----
+
+Hello, this is a repository where some code might end up that allows a
+programmer to communicate with B&O Datalink.
+
+I think there are two distinct data protocols spoken across the 7-pin B&O
+"augmented DIN" audio connector which carries two data leads.
+
+I think one is Datalink 80, which is also referred to in public documentation
+from 1986 as "Datalink (old format)":
+https://www.mikrocontroller.net/attachment/33137/datalink.pdf
+
+This is the protocol used to communicate between TVs, tape decks, amplifiers,
+and is the precedent of later B&O protocols such as Datalink '86 and Masterlink.
+
+It is spoken across pins 7 and 2 (Chassis ground).
+
+To be clarified: https://forum.beoworld.org/forums/t/40130.aspx this source
+refers to two different uses for two different pins, while most other sources
+either list them both as "Datalink", or "Datalink" and "Data shield/ground".
+
+It is my suspicion that if a Beolink 1611 Converter is connected to a Beolink
+1986-era amplifier, data communication will take place with a more advanced
+protocol spoken between pins 6 and 2.
+
+It is probable to me that the data protocol expected on the datalink pin of any
+Speakerlink or Powerlink speaker would be Datalink 80. Since speakers with
+displays have the displays set using both MCL82, MCL86 and Masterlink
+second-room units, it stands to reason that Datalink 80 traffic is somehow
+encapsulated, both inside Datalink 86 traffic and Masterlink traffic.
+
+Captures
+--- 
+
+I have made some captures using the excellent logic analyzer here:
+https://github.com/jensjoachim/B_and_O_Projects
+
+See especially support/gen, useful for replaying, and support/la.
+I will probably write my own, more specialized grabber but this was
+an extremely helpful starting point.
+
+I have enclosed my own copy of the logic analyzer. It will first output an
+ascii representation of the bitstream, then a raw hexadecimal version, and then
+finally the third line carries the actual data.
+
+People who are interested in developing this project further are more than
+encouraged to sniff data and enclose results. Please don't hesitate to get in
+touch with me on twitter (@toresbe) or IRC (toresbe) if you need help getting
+set up to do these captures. I need data!
+
+Thanks to this project it was quite easy to get started doing captures, and replays.
+
+The data format stored in these captures have had the trailing zero bytes trimmed.
+0x1xxx indicates x samples with no data; 0x00nn is receipt of one byte, nn.
