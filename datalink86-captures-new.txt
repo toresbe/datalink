@@ -1,0 +1,101 @@
+Beolink 86 traffic observed on pin 7 of TV/AUX and MCL speaker data lead 
+
+
+Beo4 pressing 0 ... 9 while in TV:
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ETX
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 ETX
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 ETX
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 ETX
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 ETX
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 1 ETX
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 ETX
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 ETX
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 ETX
+STX 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 1 ETX
+
+Beo4 pressing 0 ... 9 while in RADIO:
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 ETX
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 1 ETX
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 0 ETX
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 1 ETX
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 0 ETX
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0 1 ETX
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 1 0 ETX
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 1 1 ETX
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 0 ETX
+STX 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 1 ETX
+
+
+                 0 0000 = TV
+                 0 0001 = RADIO
+                 0 0010 = V.AUX
+                 0 0011 = A.AUX
+                 0 0100 = V.TUN
+                 0 0101 = V.TAPE
+                 0 0110 = CDV
+                 0 0111 = V.AUX
+                 0 1000 = V.TP2
+                 0 1001 = V.AUX
+                 0 1010 = SAT
+                 0 1011 = V.AUX
+                 0 1100 = V.AUX
+                 0 1101 = V.AUX
+                 0 1110 = V.AUX
+                 0 1111 = Does not display!
+                 1 0000 = A.TUN
+                 1 0001 = A.TAPE
+                 1 0010 = CD
+                 1 0011 = PHONO
+                 1 0100 = A.TP2
+                 1 0101 = A.AUX
+                 1 0111 = CD2
+                 1 1000 = Does not display
+                   ...
+                 1 1111 = Does not display
+M = must be zero
+                        0100 0 = must have these values
+                             01 = Blinking LOAD if REC
+                             0 1 = Blinking REC
+                             0  1 = no visible effect
+                             0    1 = no visible effect
+                             0     1 = blinking LOAD/DISC or LOAD/TAPE
+                             0      11 = <>
+                             0      10 = <<
+                             0      01 = >>
+                             0         1 = no visible effect
+                             0          1 = no visible effect
+                             0           1 = powers off display
+                             0            1 = no visible effect
+STX 0011 1011 1100 0001 0100 0000 0000 0010 0000 0000  ETX # Power off
+STX 0011 1011 1101 0010 0100 1000 1000 1100 0010 0110  ETX # Power on to CD
+STX 0011 1011 1100 0001 0100 1000 1000 1100 0010 0110  ETX # Power on to RADIO
+STX 0011 1011 1100 0001 0100 1000 0100 0000 0000 0000  ETX # Volume to 0
+STX 0011 1011 1100 0001 0100 0000 0000 0000 0000 0011  ETX # Mute
+
+STX 0011 1011 1100 0001 0100 1000 0100 0000 0000 0000  ETX # Volume to 0
+STX 0011 1011 1100 0001 0100 0000 0000 0000 0000 0001  ETX # RADIO 1
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0000  ETX # CD
+STX 0011 1011 1101 0010 0100 0000 0011 0000 0000 0001  ETX # CD paused @ 1
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0001  ETX # CD 1
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0001  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 1111 1111  ETX # CD 15?
+STX 0011 1011 1100 0001 0100 0000 0000 0010 0000 0000  ETX # Powering off
+
+# CD playing, 1 ... 15 - note how after 15 there're no more updates.
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0001  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0010  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0011  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0100  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0101  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0110  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 0111  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 1000  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 1001  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 1010  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 1011  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 1100  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 1101  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 0000 1110  ETX
+STX 0011 1011 1101 0010 0100 0000 0000 0000 1111 1111  ETX
+
+

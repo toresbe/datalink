@@ -58,15 +58,23 @@ void loop(void) {
 
 void dump_message(uint8_t * start, uint8_t * end) {
   uint8_t * p = start;
+  int i = 0;
+
   Serial.write("STX ");
+
   while (p < end) {
     Serial.print(*p, HEX);
-    Serial.write(" ");
+    if ((i++ & 3) == 3) Serial.write(" ");
     p++;
   }
 
-  Serial.write("ETX\n");
+  Serial.write(" ETX\n");
   Serial.flush();
+
+  uint8_t first_byte = 0;
+  p = start;
+
+
 }
 volatile int processing_message = 0;
 uint8_t incoming_byte = 0;
@@ -77,17 +85,24 @@ void pinChange(void) {
   // t1 ... t5 is thus 1 ... 5 timeslots; 1 .. 3 is data,
   // 5 is the start bit, 4 is the stop bit.
 
+  if ((micros() - last_change) <= 1000) return;
   int beolink_signal = 1 + ((micros() - last_change) / 3125);
+
+
   last_change = micros();
+
   if (beolink_signal > MCL_STX) return;
   //Serial.print(beolink_signal);
   //Serial.write(beolink_signal == MCL_ETX ? "\n" : " ");
-
-  if (processing_message) {
+  if (beolink_signal == MCL_ETX) {
+    dump_message(stx_at, val_buf + val_p);
+    val_p = 0; processing_message = 0;
+    return;
+  } else if (processing_message) {
     switch (beolink_signal) {
       case MCL_DATA_T1:
         if (!last_decoded_bit) {
-          Serial.write("Decode error; last_bit = 0 and signal = t1");
+          Serial.write("Decode error; last_bit = 0 and signal = t1\n");
         }
         last_decoded_bit = 0;
         break;
@@ -96,16 +111,12 @@ void pinChange(void) {
         break;
       case MCL_DATA_T3:
         if (last_decoded_bit) {
-          Serial.write("Decode error; last_bit = 1 and signal = t3");
+          Serial.write("Decode error; last_bit = 1 and signal = t3\n");
         }
         last_decoded_bit = 1;
         break;
-      case MCL_ETX:
-        dump_message(stx_at, val_buf + val_p);
-        val_p = 0; processing_message = 0;
-        break;
     }
-    
+
     val_buf[val_p++] = last_decoded_bit;
 
   } else if (beolink_signal == MCL_STX) {
