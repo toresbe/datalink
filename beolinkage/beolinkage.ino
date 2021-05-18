@@ -18,13 +18,12 @@ enum Source {
 };
 
 void setup() {
-  Serial.begin(230400);
-  pinMode(DATA_PIN, OUTPUT);      // Serial data
-  
+  Serial.begin(9600);
+
   send_preamble();
   send_preamble();
   send_stx();
-  
+
   //int i = 0;
   //while (down[i]) send_bit(down[i++] == '1' ? 1 : 0);
   send_etx();
@@ -39,10 +38,12 @@ int encode_beolink_symbol(int this_bit, int previous_bit) {
 }
 
 void send_pulse() {
+  pinMode(DATA_PIN, OUTPUT);      // Serial data
   digitalWrite(DATA_PIN, LOW);
   delayMicroseconds(MCL_PULSE_WIDTH);
   digitalWrite(DATA_PIN, HIGH);
   delayMicroseconds(MCL_PULSE_WIDTH);
+  pinMode(DATA_PIN, INPUT);      // Serial data
 }
 
 void send_stx() {
@@ -122,16 +123,48 @@ void volume_status(uint8_t volume) {
   send_etx();
 }
 
+int inputBuffer[512];
+int inputBufferIndex = 0;
+
+void sendMessage(int * outgoingMessage, int msgLen) {
+  int bufIndex = 0;
+  send_preamble();
+  send_preamble();
+  send_stx();
+  //Serial.write('\n');
+  while (bufIndex < msgLen) {
+    send_bit(outgoingMessage[bufIndex]);
+    //Serial.write(outgoingMessage[bufIndex] ? '1' : '0');
+    bufIndex++;
+  }
+  send_etx();
+
+}
+
 void loop() {
-    if (Serial.available() > 0) {
+  if (Serial.available() > 0) {
 
     // read the incoming byte:
     incomingByte = Serial.read();
-
     // say what you got:
-    Serial.print("I received: ");
-    Serial.println(incomingByte, DEC);
+    switch (incomingByte) {
+      case 'S': // STX
+        inputBufferIndex = 0;
+        break;
+      case 'E': // ETX
+        sendMessage(inputBuffer, inputBufferIndex);
+        break;
+      case '1':
+        inputBuffer[inputBufferIndex++] = 1;
+        break;
+      case '0':
+        inputBuffer[inputBufferIndex++] = 0;
+        break;
+    }
+
   }
+
+
   //volume_status(0);
   //source_status(Source::Phono, 0);
 
